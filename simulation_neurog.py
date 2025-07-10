@@ -47,8 +47,6 @@ class CellSimulation:
                  pA_to_B_fc = None,
                  perc_A_fc = None,
                  min_per_frame = 60,
-                 start_setup = 'exp',
-                 distr_setup = 'gauss',
                  smoothing_perc = 0.2,
                  layers_dist = None,
                  layers_perc = None,
@@ -81,8 +79,7 @@ class CellSimulation:
             self.perc_A_fc = arrayed_f(perc_A_fc)
 
         self.min_per_frame = min_per_frame
-        self.start_setup = start_setup
-        self.distr_setup = distr_setup
+
         self.smoothing_perc = smoothing_perc
 
         self.layers_dist = layers_dist
@@ -133,10 +130,9 @@ class CellSimulation:
         self.layer_colors = ['#ae0000', '#e33e00', '#ffc000', '#0088ab', '#03286b']
         self.layer_labels = ['l6', 'l5', 'l4', 'l23', 'l1']
 
-        if distr_setup == 'gauss':
-            self.distr_func = self.distribute_mitosis_gaussian
-        else:
-            self.distr_func = self.distribute_mitosis
+
+        self.distr_func = self.distribute_mitosis_gaussian
+
         
 
         self.t = 0
@@ -149,99 +145,69 @@ class CellSimulation:
 
 
         ''' starting cell distribution (mitosis)'''
-        # all cells born at t=0
-        if start_setup == 'sync':
-            self.distr_func(self.n_mitos[0], self.n_aP0, c0_a, c0_a)
-            self.distr_func(self.n_mitos[1], self.n_bP0, c0_b, c0_b)
-        
-        # cells birth uniformly distributed in the interval [-cycle_length, 0]
-        elif start_setup == 'linear':
-            starting_mitosis_density_a = self.n_aP0 / c0_a
-            starting_mitosis_density_b = self.n_bP0 / c0_b
-
-            if self.n_aP0 != 0:
-                furthest_mitosis_a = min(int(c0_a), self.tot_frames)
-                for t in tqdm(range(0, furthest_mitosis_a), desc = 'apical setup'):
-                    self.distr_func(self.n_mitos[0], starting_mitosis_density_a, t+0.5, c0_a)
-
-                remaining_a = self.n_aP0 - np.sum(self.n_mitos[0])
-                if remaining_a > 0:
-                    self.distr_func(self.n_mitos[0], remaining_a, furthest_mitosis_a + 0.5, c0_a)
-
-            print('basal setup')
-            if self.n_bP0 != 0:
-                furthest_mitosis_b = min(int(c0_b), self.tot_frames)
-                for t in tqdm(range(0, furthest_mitosis_b), desc = 'apical setup'):
-                    self.distr_func(self.n_mitos[1], starting_mitosis_density_b, t+0.5, c0_b)
-                
-                remaining_b = self.n_bP0 - np.sum(self.n_mitos[1])
-                if remaining_b > 0:
-                    self.distr_func(self.n_mitos[1], remaining_b, furthest_mitosis_b + 0.5, c0_b)
-        
         # cell birth distributed following a preexisting exponential growth
-        elif start_setup == 'exp':
-            ''' apical '''
-            if self.n_aP0 != 0:
-                bleeding_range = int(3*self.smoothing_perc*c0_a)
-                mitoses_a = np.zeros((3, self.tot_frames+bleeding_range))
-                # future mitosis at maximum are at the cell_cycle_length + the smoothing distance
-                furthest_mitosis_a = min(int(c0_a)+1, self.tot_frames)
-                # we need to consider also negative times
-                negative_mitosis_a = -bleeding_range
 
-                # I need to add mitosis until the cell cycle (further ones are going to interfere with the ones calculated in simulation)
-                for i, t in enumerate(range(negative_mitosis_a, furthest_mitosis_a)):
-                    mitoses_a[0, i] = t
-                    mitoses_a[1, i] = 2 ** ((t+0.5) / c0_a)
+        ''' apical '''
+        if self.n_aP0 != 0:
+            bleeding_range = int(3*self.smoothing_perc*c0_a)
+            mitoses_a = np.zeros((3, self.tot_frames+bleeding_range))
+            # future mitosis at maximum are at the cell_cycle_length + the smoothing distance
+            furthest_mitosis_a = min(int(c0_a)+1, self.tot_frames)
+            # we need to consider also negative times
+            negative_mitosis_a = -bleeding_range
+
+            # I need to add mitosis until the cell cycle (further ones are going to interfere with the ones calculated in simulation)
+            for i, t in enumerate(range(negative_mitosis_a, furthest_mitosis_a)):
+                mitoses_a[0, i] = t
+                mitoses_a[1, i] = 2 ** ((t+0.5) / c0_a)
 
 
-                # I need to smooth everything
-                # I lose some on t<cycle, but then I get it back with left tails of simulation mitosis
-                # I add a right tail, but is what is needed later
-                for i, t in enumerate(tqdm(mitoses_a[0, bleeding_range:], desc="apical setup")):
-                    self.distr_func(mitoses_a[2], mitoses_a[1, i], i+0.5, c0_a)
+            # I need to smooth everything
+            # I lose some on t<cycle, but then I get it back with left tails of simulation mitosis
+            # I add a right tail, but is what is needed later
+            for i, t in enumerate(tqdm(mitoses_a[0, bleeding_range:], desc="apical setup")):
+                self.distr_func(mitoses_a[2], mitoses_a[1, i], i+0.5, c0_a)
 
-                tot_mitos_a = np.sum(mitoses_a[2, bleeding_range:])
-                if tot_mitos_a > 0:
-                    # normalize at 1
-                    mitoses_a[2] /= tot_mitos_a
-                    # normalize at starting aP
-                    mitoses_a[2] *= self.n_aP0
-                
-                self.n_mitos[0,:furthest_mitosis_a+bleeding_range] = mitoses_a[2, bleeding_range:2*bleeding_range + furthest_mitosis_a]
-                
+            tot_mitos_a = np.sum(mitoses_a[2, bleeding_range:])
+            if tot_mitos_a > 0:
+                # normalize at 1
+                mitoses_a[2] /= tot_mitos_a
+                # normalize at starting aP
+                mitoses_a[2] *= self.n_aP0
+            
+            self.n_mitos[0,:furthest_mitosis_a+bleeding_range] = mitoses_a[2, bleeding_range:2*bleeding_range + furthest_mitosis_a]
+            
 
-            ''' basal '''
-            if self.n_bP0 != 0:
-                bleeding_range = int(3*self.smoothing_perc*c0_b)
-                mitoses_b = np.zeros((3, self.tot_frames+bleeding_range))
-                # future mitosis at maximum are at the cell_cycle_length + the smoothing distance
-                furthest_mitosis_b = min(int(c0_b)+1, self.tot_frames)
-                # we need to consider also negative times
-                negative_mitosis_b = -bleeding_range
+        ''' basal '''
+        if self.n_bP0 != 0:
+            bleeding_range = int(3*self.smoothing_perc*c0_b)
+            mitoses_b = np.zeros((3, self.tot_frames+bleeding_range))
+            # future mitosis at maximum are at the cell_cycle_length + the smoothing distance
+            furthest_mitosis_b = min(int(c0_b)+1, self.tot_frames)
+            # we need to consider also negative times
+            negative_mitosis_b = -bleeding_range
 
-                # I need to add mitosis until the cell cycle (further ones are going to interfere with the ones calculated in simulation)
-                for i, t in enumerate(range(negative_mitosis_b, furthest_mitosis_b)):
-                    mitoses_b[0, i] = t
-                    mitoses_b[1, i] = 2 ** ((t+0.5) / c0_b)
+            # I need to add mitosis until the cell cycle (further ones are going to interfere with the ones calculated in simulation)
+            for i, t in enumerate(range(negative_mitosis_b, furthest_mitosis_b)):
+                mitoses_b[0, i] = t
+                mitoses_b[1, i] = 2 ** ((t+0.5) / c0_b)
 
-                # I need to smooth everything
-                # I lose some on t<cycle, but then I get it back with left tails of simulation mitosis
-                # I add a right tail, but is what is needed later
-                for i, t in enumerate(tqdm(mitoses_b[0, bleeding_range:], desc="basal setup")):
-                    self.distr_func(mitoses_b[2], mitoses_b[1, i], i+0.5, c0_b)
+            # I need to smooth everything
+            # I lose some on t<cycle, but then I get it back with left tails of simulation mitosis
+            # I add a right tail, but is what is needed later
+            for i, t in enumerate(tqdm(mitoses_b[0, bleeding_range:], desc="basal setup")):
+                self.distr_func(mitoses_b[2], mitoses_b[1, i], i+0.5, c0_b)
 
-                tot_mitos_b = np.sum(mitoses_b[2, bleeding_range:])
-                if tot_mitos_b > 0:
-                    # normalize at 1
-                    mitoses_b[2] /= tot_mitos_b
-                    # normalize at starting aP
-                    mitoses_b[2] *= self.n_bP0
-                
-                self.n_mitos[1,:furthest_mitosis_b+bleeding_range] = mitoses_b[2, bleeding_range:2*bleeding_range + furthest_mitosis_b]
+            tot_mitos_b = np.sum(mitoses_b[2, bleeding_range:])
+            if tot_mitos_b > 0:
+                # normalize at 1
+                mitoses_b[2] /= tot_mitos_b
+                # normalize at starting aP
+                mitoses_b[2] *= self.n_bP0
+            
+            self.n_mitos[1,:furthest_mitosis_b+bleeding_range] = mitoses_b[2, bleeding_range:2*bleeding_range + furthest_mitosis_b]
 
-        else:
-            raise ValueError('start_setup for cell distribution not recognized')
+
 
     def gaussian(self, x, m, s, k):
         return k * np.exp(-((x-m)/s)**2)
@@ -866,82 +832,3 @@ class CellSimulation:
         
         if show:
             plt.show()
-
-
-def get_interval(res, n_min = 0, n_max = 1):
-    n = math.ceil((n_max - n_min)/res) + 1
-    n_range = np.array(range(0, n))
-    n_list = n_range * res + n_min
-    n_list[n_list > n_max] = n_max
-
-    return n_list
-
-
-def test_parameters(output_folder):
-    k = 0.866
-
-    layers_gaus_coef = pd.read_csv('layers_gaus_coef.csv')
-    
-
-    pB_to_N_list = get_interval(0.1, n_min = 0.5, n_max = 1)[::-1]
-    pB_to_N_fc_list = [lambda x, val=val: val for val in pB_to_N_list]
-
-    pE_start_list = get_interval(0.1, n_min = 0, n_max = 0.5)
-    pE_fc_list = [lambda x, val=val: 1/(1 + np.exp(-0.9620962961790901*(x-3.4620613854762183)))*(1-val) + val for val in pE_start_list]
-    
-    time_resolutions = [30, 60, 120][::-1]
-
-    tot_combo = len(pB_to_N_fc_list) * len(pE_fc_list) * len(time_resolutions)
-
-
-        
-
-    for l, pB_to_N_fc in enumerate(pB_to_N_fc_list):
-        for j, pE_fc in enumerate(pE_fc_list):
-            for i, time_res in enumerate(time_resolutions):
-                current = i + len(time_resolutions)*(j+len(pE_fc_list)*l)
-                print()
-                print(f'{current} of {tot_combo}:    {time_res} min    pB_to_N: {pB_to_N_list[l]}    pE_start: {pE_start_list[j]}')
-
-
-                sim = CellSimulation(
-                    n_aP0=k, n_bP0=1-k,
-                    min_per_frame = time_res,
-                    pB_to_N_fc= pB_to_N_fc,
-                    pE_fc= pE_fc,
-                    layers_dist=layers_gaus_coef)
-
-                sim.run()
-
-                metrics = sim.get_metrics()
-
-                param = {
-                    't_res': time_res,
-                    'pB_to_N': pB_to_N_list[l],
-                    'pE_start': pE_start_list[j]
-                }
-                easy_name = ''.join(f'{ke}-{v:.2f}_' if isinstance(v, float) else f'{ke}-{v}_' for ke, v in param.items())
-
-
-                output = pd.DataFrame([param | metrics])
-                output.to_csv(f'{output_folder}/{easy_name}metrics.csv')
-
-                tables = sim.get_tables()
-                
-
-                tables_output = {
-                    'days': tables['days'],
-                    'tot_aN': tables['n_cells'][2],
-                    'tot_bN': tables['n_cells'][3],
-                    'new_aN': tables['new_cells'][2],
-                    'new_bN': tables['new_cells'][3]
-                }
-
-                tables_output = pd.DataFrame(tables_output)
-
-                tables_output.to_csv(f'{output_folder}/{easy_name}tables.csv')
-
-                sim.plot(save = True, folder_path=f'{output_folder}/{easy_name}', show=False)
-                sim.plot_layers(save = True, folder_path=f'{output_folder}/{easy_name}', show=False)
-
-    return 0
