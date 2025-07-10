@@ -1,4 +1,4 @@
-# neurogenesis_simulation
+# neurogenesis simulation
 
 
 
