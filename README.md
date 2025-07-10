@@ -10,8 +10,10 @@
 clone the repository
 
 create a virtual environment with
-  `conda env create -f environment.yml`
 
+`conda env create -f environment.yml`
+
+name of the environment `is neuro_sim-env`
 
 ## license
 
