@@ -5,10 +5,15 @@
 
 
 
+### to try the code on your own
+
+clone the repository
+
+create a virtual environment with
+  `conda env create -f environment.yml`
 
 
-
-
+## license
 
 Shield: [![CC BY-NC 4.0][cc-by-nc-shield]][cc-by-nc]
 
