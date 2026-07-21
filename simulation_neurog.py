@@ -239,7 +239,18 @@ class CellSimulation:
             E = self.pA_to_N_fc(t/(24 * self.R))
 
         # target perc_A
-        x = self.perc_A_fc(t /(24 * self.R))
+        # since we need the target as ratio between CELLS, we need to adjust per MITOSIS
+        # perc_A is the percentage of MITOSIS
+        # we multiply by cycle_length_A / cycle_length_B to get the adjust target for CELLS
+
+        cycle_length_A = self.a_cycle_length((self.t + 0.5)/(24 * self.R))
+        cycle_length_B = self.b_cycle_length((self.t + 0.5)/(24 * self.R))
+
+        if self.perc_A_fc is None:
+            x = None
+        else:
+            x = self.perc_A_fc(t /(24 * self.R))
+
 
         pA_to_A, pA_to_B, pA_to_N = sp.symbols('pA_to_A pA_to_B pA_to_N')
         pB_to_B, pB_to_N = sp.symbols('pB_to_B pB_to_N')
@@ -252,11 +263,27 @@ class CellSimulation:
         if self.pA_to_N_fc:
             eq2 = sp.Eq(E, pA_to_N)
         else:
-            eq2 = sp.Eq(E, perc_A * pA_to_N + perc_B * pB_to_N)
+            ratio_A_cell = nA / nB if nB != 0 else np.inf
+            ratio_A_mitosis = ratio_A_cell * (cycle_length_B / cycle_length_A)
+
+            perc_A_mitosis = 1 / (1 + 1/ratio_A_mitosis)
+            perc_B_mitosis = 1 - perc_A_mitosis
+
+            eq2 = sp.Eq(E, perc_A_mitosis * pA_to_N + perc_B_mitosis * pB_to_N)
 
         if self.pA_to_B_fc is None:
             # target ratio between aP and bP condition
-            eq3 = sp.Eq(nA + 2*mA*pA_to_A - mA, x*(nA + nB + mA*(2*(pA_to_A + pA_to_B) - 1) + mB*(2*pB_to_B - 1)))
+
+            # this is if the target is the ratio between cells
+            # eq3 = sp.Eq(nA + 2*mA*pA_to_A - mA, x*(nA + nB + mA*(2*(pA_to_A + pA_to_B) - 1) + mB*(2*pB_to_B - 1)))
+
+            # we should use the cycle length of the following frame, but it's more or less the same
+
+            # this is if the target is the ratio between mitosis
+            eq3 = sp.Eq((nA + 2*mA*pA_to_A - mA) * cycle_length_B,
+                        x*((nA + 2*mA*pA_to_A - mA) * cycle_length_B +
+                           (nB + 2*mA*pA_to_B + 2*mB*pB_to_B - mB) * cycle_length_A)
+                        )
         else:
             # percentage of proliferative daughters of A going to B
             current_pA_to_B = self.pA_to_B_fc(t/(24 * self.R))
@@ -265,6 +292,7 @@ class CellSimulation:
         # bP behavior
         current_pB_to_N = self.pB_to_N_fc(t/(24 * self.R))
         eq4 = sp.Eq(pB_to_N, current_pB_to_N)
+
 
         equations = [eq0, eq1, eq2, eq3, eq4]
         variables = (pA_to_A, pA_to_B, pA_to_N, pB_to_B, pB_to_N)
@@ -284,10 +312,11 @@ class CellSimulation:
                     break
 
 
-        
-
         # keys are not strings yet
         output = {str(k): float(v) for k, v in solution[0].items()}
+
+        if self.clip_prob:
+            output = {str(k): clipped(float(v)) for k, v in solution[0].items()}
 
 
         output['E'] = E
