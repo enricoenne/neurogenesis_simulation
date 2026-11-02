@@ -1,6 +1,12 @@
 # Neurogenesis simulation
 
+Simulation of mouse cortical neurogenesis based on
 
+* apical and basal progenitor proliferation
+
+* cell cycle exit (or cell to cell transition probabilities)
+
+* neuronal production
 
 
 ## Installation and setup
@@ -29,7 +35,7 @@ Open Conda Prompt
 
 It will open a browser window
 
-* select on the left the notebook of intereset (.ipynb format)
+* select on the left the notebook of intereset (.ipynb format) in the **notebooks** folder
 
     check that the selected kernel (top right) is `Python (neuro_sim-env)`
     
@@ -71,7 +77,7 @@ It will open a browser window
 
 **Theoretical neurogenesis**
 
-* Calculation of optimal neurogenesis curve to achieve right layer nueron distribution
+* Calculation of optimal neurogenesis curve to achieve right layer neuron distribution
 
 
 
