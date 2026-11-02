@@ -11,6 +11,8 @@ Simulation of mouse cortical neurogenesis based on
 
 ## Installation and setup
 
+The code has been tested on *Windows 11* and *Linux Mint 22.1*
+
 The recommended installation requires Conda (you can install it from [their official website](https://continuumio-docs.readthedocs-hosted.com/miniconda/install/))
 
 ### 1. clone the repository
@@ -80,8 +82,7 @@ It will open a browser window
 * Calculation of optimal neurogenesis curve to achieve right layer neuron distribution
 
 
-
-## license
+## License
 
 Shield: [![CC BY-NC 4.0][cc-by-nc-shield]][cc-by-nc]
 
