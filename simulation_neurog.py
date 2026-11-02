@@ -115,6 +115,8 @@ class CellSimulation:
         self.n_mitos = np.zeros((2, self.tot_frames))                     # how many mitosis at that time frame                       aP, bP
         self.probs = np.zeros((6, self.tot_frames))                       # probabilities in time                                     pA_to_A, pA_to_B, pA_to_N, pB_to_B, pB_to_N, E (cell cycle exit)
         self.percs = np.zeros((4, self.tot_frames))                       # percentages of progenitors and neurons                    perc_A, perc_B, perc_Na, perc_Nb
+
+        self.cycle_length = np.zeros((2, self.tot_frames))
         
         self.layers = np.zeros((2, self.n_layers, self.tot_frames))       # first dimension is apical or basal                        each layer in the order defined by layers_dist
         self.layer_spread = np.zeros((self.n_layers, self.tot_frames))    # spread function for the layers
@@ -450,7 +452,9 @@ class CellSimulation:
         self.percs[2, self.t] = perc_Na
         self.percs[3, self.t] = 1 - perc_Na
 
-        # self.test[0, self.t] = self.prob_test(self.t)
+        self.cycle_length[0, self.t] = self.a_cycle_length((self.t + 0.5)/(24 * self.R))
+        self.cycle_length[1, self.t] = self.b_cycle_length((self.t + 0.5)/(24 * self.R))
+
 
         E = self.probs[5, self.t] = self.probs[2, self.t]*self.percs[0, self.t] + self.probs[4, self.t]*self.percs[1, self.t]
 
@@ -473,6 +477,7 @@ class CellSimulation:
             'new_cells': self.new_cells,
             'n_mitos': self.n_mitos,
             'probs': self.probs,
+            'cycle_length': self.cycle_length,
             'layers': self.layers,
             'layer_spread': self.layer_spread
         }
