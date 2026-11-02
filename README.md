@@ -20,22 +20,31 @@ The simulation code requires only a standard computer with enough RAM to support
 
 ### Software requirements
 
+#### OS
+
 The code has been tested on:
-    * Windows 11
-    * Linux Mint 22.1
+* Windows 11
+* Linux Mint 22.1
+* macOS Golden Gate 27.0.1
 
-The recommended installation requires Conda
-it can be installed from [their official website](https://continuumio-docs.readthedocs-hosted.com/miniconda/install/)
+#### other softwares
 
-## Installation and setup
+The recommended installation requires
+
+* Conda: to manage the Python environemnt
+    * you can istall the minimal Miniconda software from [their official website](https://continuumio-docs.readthedocs-hosted.com/miniconda/install/) (it could take 5 min)
+* git: to clone the repository
+    * you can install it from [their official website](https://git-scm.com/install/) (it could take 2 min)
+
+
+## Installation and setup (up to 10 min)
+
+Open Anaconda Prompt (in Windows) or any terminal with `conda` access and execute the following commands:
 
 ### 1. clone the repository
 
-Open Conda Prompt
-
     git clone https://github.com/enricoenne/neurogenesis_simulation
     cd neurogenesis_simulation
-
 
 ### 2. create and set up the Conda environemnt
 
@@ -47,13 +56,15 @@ Open Conda Prompt
 
     jupyter lab
 
-Blocks of code running the simulation might require a few minutes ro execute (a progress bar is shown)
-
 It will open a browser window
 
 * select on the left the notebook of intereset (.ipynb format) in the **notebooks** folder
 
-* check that the selected kernel (top right) is `Python (neuro_sim-env)`
+* select the right kernel (top right)
+    * the default is `Python 3 (opykernel)`
+    * select kernel `Python (neuro_sim-env)` instead
+
+Blocks of code running the simulation might require a few minutes to execute (a progress bar is shown)
     
 
 ## Notebooks
