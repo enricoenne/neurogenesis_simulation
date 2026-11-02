@@ -19,7 +19,7 @@ Open Conda Prompt
 
     conda env create -f environment.yml
     conda activate neuro_sim-env
-    python -m ipykernel install --user --name neuro_sim-env --display-name 
+    python -m ipykernel install --user --name neuro_sim-env --display-name "Python (neuro_sim-env)"
 
 ### 3. run the notebooks
 
