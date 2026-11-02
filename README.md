@@ -11,24 +11,21 @@ The recommended installation requires Conda (you can install it from [their offi
 
 Open Conda Prompt
 
-   ```bash
    git clone https://github.com/enricoenne/neurogenesis_simulation
    cd neurogenesis_simulation
-   ```
 
 ### 2. create and set up the Conda environemnt
 
-    ```bash
     conda env create -f environment.yml
     conda activate neuro_sim-env
-    python -m ipykernel install --user --name neuro_sim-env --display-name "Python (neuro_sim-env)"
-    ```
+    python -m ipykernel install --user --name neuro_sim-env --display-name 
 
 ### 3. run the notebooks
 
-    ```bash
+    ```
     jupyter lab
     ```
+
 
 It will open a browser window
 
