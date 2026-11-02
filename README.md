@@ -11,10 +11,9 @@ The recommended installation requires Conda (you can install it from [their offi
 
 Open Conda Prompt
 
-    ```
     git clone https://github.com/enricoenne/neurogenesis_simulation
     cd neurogenesis_simulation
-    ```
+
 
 ### 2. create and set up the Conda environemnt
 
