@@ -1,19 +1,40 @@
-# neurogenesis simulation
+# Neurogenesis simulation
 
 
 
 
+## Installation and setup
+
+The recommended installation requires Conda (you can install it from [their official website](https://continuumio-docs.readthedocs-hosted.com/miniconda/install/))
+
+### 1. clone the repository
+
+Open Conda Prompt
+
+   ```bash
+   git clone https://github.com/enricoenne/neurogenesis_simulation
+   cd neurogenesis_simulation
+   ```
+
+### 2. create and set up the Conda environemnt
+    ```bash
+    conda env create -f environment.yml
+    conda activate neuro_sim-env
+    python -m ipykernel install --user --name neuro_sim-env --display-name "Python (neuro_sim-env)"
+    ```
+
+### 3. run the notebooks
+    ```bash
+    jupyter lab
+    ```
+It will open a browser window
+
+* select on the left the notebook of intereset (.ipynb format)
+
+    check that the selected kernel (top right) is `Python (neuro_sim-env)
+    
 
 
-### to try the code on your own
-
-clone the repository
-
-create a virtual environment with
-
-`conda env create -f environment.yml`
-
-name of the environment `is neuro_sim-env`
 
 ## license
 
