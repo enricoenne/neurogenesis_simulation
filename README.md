@@ -36,39 +36,42 @@ It will open a browser window
 
 ## Notebooks
 
-### data_extraction.ipynb
+**data_extraction.ipynb**
 
 * Cell cycle length
 * Cell cycle exit
 * Apical-basal mitosis proportion
 
-### data_extraction_brdu.ipynb
+**data_extraction_brdu.ipynb**
 
 * Extraction of nuclear density and position from BrdU pictures
 
-### data_extraction_layers_from_brdu.ipynb
+**data_extraction_layers_from_brdu.ipynb**
 
 * Estimation of layer production timeline from BrdU data
 
-### data_extraction_cortex.ipynb
+**data_extraction_cortex.ipynb**
 
 * Estimation of layer neuron population from DAPI data
 
-### results.ipynb
+**results.ipynb**
 
 * Simulation with default parameters
 * Simulation with higher cell cycle exit rate (Indirect to Direct Neurogenesis)
 * Simulation Direct to Indirect Neurogenesis
 
-
-### results_direct_exploration_high-res.ipynb
+**results_direct_exploration_high-res.ipynb**
 
 * Exploration of parameters compatible with Direct to Indirect Neurogenesis
 * Selection of representative parameter combinations
 
-### results_cell-cycle-length.ipynb
+**results_cell-cycle-length.ipynb**
 
 * Exploration of different Basal Progenitor cell cycle lengths
+
+**Theoretical neurogenesis**
+
+* Calculation of optimal neurogenesis curve to achieve right layer nueron distribution
 
 
 
