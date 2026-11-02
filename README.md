@@ -8,12 +8,26 @@ Simulation of mouse cortical neurogenesis based on
 
 * neuronal production
 
+## Preview
+
+Pre-generated plots can be viewed opening directly in the browser the respective notebook (.ipynb) files in the *notebooks* folder.
+
+## System requirements
+
+### Hardware requirements
+
+The simulation code requires only a standard computer with enough RAM to support the in-memory operations.
+
+### Software requirements
+
+The code has been tested on:
+    * Windows 11
+    * Linux Mint 22.1
+
+The recommended installation requires Conda
+it can be installed from [their official website](https://continuumio-docs.readthedocs-hosted.com/miniconda/install/)
 
 ## Installation and setup
-
-The code has been tested on *Windows 11* and *Linux Mint 22.1*
-
-The recommended installation requires Conda (you can install it from [their official website](https://continuumio-docs.readthedocs-hosted.com/miniconda/install/))
 
 ### 1. clone the repository
 
@@ -33,13 +47,13 @@ Open Conda Prompt
 
     jupyter lab
 
-
+Blocks of code running the simulation might require a few minutes ro execute (a progress bar is shown)
 
 It will open a browser window
 
 * select on the left the notebook of intereset (.ipynb format) in the **notebooks** folder
 
-    check that the selected kernel (top right) is `Python (neuro_sim-env)`
+* check that the selected kernel (top right) is `Python (neuro_sim-env)`
     
 
 ## Notebooks
@@ -81,6 +95,9 @@ It will open a browser window
 
 * Calculation of optimal neurogenesis curve to achieve right layer neuron distribution
 
+## Simulation code
+
+The simulation code is contained in the simulation_neurog.py file
 
 ## License
 
