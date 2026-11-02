@@ -17,6 +17,7 @@ Open Conda Prompt
    ```
 
 ### 2. create and set up the Conda environemnt
+
     ```bash
     conda env create -f environment.yml
     conda activate neuro_sim-env
@@ -24,14 +25,16 @@ Open Conda Prompt
     ```
 
 ### 3. run the notebooks
+
     ```bash
     jupyter lab
     ```
+
 It will open a browser window
 
 * select on the left the notebook of intereset (.ipynb format)
 
-    check that the selected kernel (top right) is `Python (neuro_sim-env)
+    check that the selected kernel (top right) is `Python (neuro_sim-env)`
     
 
 
