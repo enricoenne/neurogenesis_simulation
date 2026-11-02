@@ -24,7 +24,7 @@ Open Conda Prompt
 
 ### 3. run the notebooks
 
-    ```jupyter lab```
+    jupyter lab
 
 
 
